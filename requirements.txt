@@ -3,5 +3,6 @@ build==1.2.2.post1
 twine==5.1.1
 typer==0.13.1
 pipx==1.7.1
+appdirs==1.4.4
 
 # pipx install . --force

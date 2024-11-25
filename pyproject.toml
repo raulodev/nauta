@@ -19,7 +19,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = ["typer>=0.13.1"]
+dependencies = ["typer>=0.13.1" , "appdirs>=1.4.4"]
 
 [project.urls]
 Homepage = "https://github.com/raulodev/nauta"
