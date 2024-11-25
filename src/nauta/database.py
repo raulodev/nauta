@@ -34,7 +34,7 @@ def initialize_database():
         CREATE TABLE IF NOT EXISTS session (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             csrfhw TEXT NOT NULL,
-            lang TEXT NOT NULL,
+            lang TEXT NOT NULL
         )
     """
     )
