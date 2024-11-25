@@ -19,5 +19,5 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = https://github.com/raulodev/nauta"
+Homepage = "https://github.com/raulodev/nauta"
 Issues = "https://github.com/raulodev/nauta/issues"
