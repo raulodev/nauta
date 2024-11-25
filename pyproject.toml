@@ -7,7 +7,7 @@ nauta = "nauta.cli:app"
 
 [project]
 name = "nauta"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Raúl Cobiellas", email="raulodev@gmail.com" },
 ]
@@ -19,7 +19,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = ["typer>=0.13.1" , "appdirs>=1.4.4"]
+dependencies = ["typer>=0.13.1" , "appdirs>=1.4.4" , "requests>=2.32.3"]
 
 [project.urls]
 Homepage = "https://github.com/raulodev/nauta"

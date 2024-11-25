@@ -15,11 +15,11 @@ def get_global_db_path():
 
 
 def initialize_database():
+    """Crear tabla si no existe"""
     db_path = get_global_db_path()
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
-    # Crear tabla si no existe
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS accounts (
@@ -36,7 +36,7 @@ def initialize_database():
 
 
 def list_account() -> list[Account]:
-    """Función para listar los datos de la base de datos"""
+    """Función para listar las cuentas"""
     db_path = get_global_db_path()
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
@@ -49,11 +49,30 @@ def list_account() -> list[Account]:
     return [Account(*row) for row in rows]
 
 
-def add_account(email: str, password: str, is_default: bool = False) -> Account:
-    """Función para agregar un nuevo elemento a la base de datos"""
+def get_account(email: str) -> Account:
+    """Función para obtener una cuenta"""
     db_path = get_global_db_path()
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
+
+    # Leer datos
+    cursor.execute("SELECT * FROM accounts WHERE email = ?", (email,))
+    row = cursor.fetchone()
+
+    # Mostrar datos
+    return Account(*row) if row else None
+
+
+def add_account(email: str, password: str, is_default: bool = True) -> None:
+    """Función para agregar una nueva cuenta"""
+    db_path = get_global_db_path()
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    if is_default:
+        accounts = list_account()
+        for account in accounts:
+            update_account(account.email)
 
     # Agregar datos
     cursor.execute(
@@ -69,7 +88,7 @@ def add_account(email: str, password: str, is_default: bool = False) -> Account:
 
 
 def delete_account(email: str) -> None:
-    """Función para eliminar un elemento de la base de datos"""
+    """Función para eliminar una cuenta"""
     db_path = get_global_db_path()
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
@@ -81,8 +100,8 @@ def delete_account(email: str) -> None:
     connection.close()
 
 
-def update_account(email: str, password: str, is_default: bool = False) -> None:
-    """Función para actualizar un elemento de la base de datos"""
+def update_password(email: str, password: str) -> None:
+    """Función para actualizar una contraseña de usuario"""
     db_path = get_global_db_path()
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
@@ -91,10 +110,35 @@ def update_account(email: str, password: str, is_default: bool = False) -> None:
     cursor.execute(
         """
         UPDATE accounts
-        SET email = ?, password = ?, is_default = ?
+        SET password = ?
         WHERE email = ?
         """,
-        (email, password, is_default, email),
+        (password, email),
+    )
+
+    connection.commit()
+    connection.close()
+
+
+def update_account(email: str, is_default: bool = False) -> None:
+    """Función para actualizar una cuenta"""
+    db_path = get_global_db_path()
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    if is_default:
+        accounts = list_account()
+        for account in accounts:
+            update_account(account.email)
+
+    # Actualizar datos
+    cursor.execute(
+        """
+        UPDATE accounts
+        SET email = ?, is_default = ?
+        WHERE email = ?
+        """,
+        (email, is_default, email),
     )
 
     connection.commit()
