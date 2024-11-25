@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[project]
+name = "nauta"
+version = "0.0.1"
+authors = [
+  { name="Raúl Cobiellas", email="raulodev@gmail.com" },
+]
+description = "Línea de comandos para el nauta hogar Cuba"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = https://github.com/raulodev/nauta"
+Issues = "https://github.com/raulodev/nauta/issues"
