@@ -7,7 +7,7 @@ nauta = "nauta.cli:app"
 
 [project]
 name = "nauta"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Raúl Cobiellas", email="raulodev@gmail.com" },
 ]
