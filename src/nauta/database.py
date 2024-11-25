@@ -2,9 +2,7 @@ import sqlite3
 import os
 from appdirs import user_data_dir
 from .models import Account
-
-APP_NAME = "nauta"
-APP_AUTHOR = "raulodev"
+from .constants import APP_NAME, APP_AUTHOR
 
 
 def get_global_db_path():
@@ -27,6 +25,16 @@ def initialize_database():
             email TEXT NOT NULL,
             password TEXT NOT NULL,
             is_default INTEGER NOT NULL
+        )
+    """
+    )
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS session (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            csrfhw TEXT NOT NULL,
+            lang TEXT NOT NULL,
         )
     """
     )
