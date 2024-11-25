@@ -2,10 +2,10 @@
 
 Línea de comandos para el nauta hogar Cuba
 
-## Instalación
+## Instalación con pipx
 
 ```bash
-pip install nauta
+pipx install nauta
 ```
 
 ## Uso
