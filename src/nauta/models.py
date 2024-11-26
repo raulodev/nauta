@@ -7,3 +7,12 @@ class Account:
     email: str
     password: str
     is_default: bool
+
+
+@dataclass
+class Session:
+    id: int
+    csrfhw: str
+    username: str
+    wlanuserip: str
+    attribute_uuid: str

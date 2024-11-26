@@ -5,6 +5,8 @@ typer==0.13.1
 pipx==1.7.1
 appdirs==1.4.4
 requests==2.32.3
+beautifulsoup4==4.12.3
+apscheduler==3.11.0
 
 # pipx install . --force
 # pipx run --spec . nauta --help

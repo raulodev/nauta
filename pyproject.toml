@@ -7,19 +7,22 @@ nauta = "nauta.cli:app"
 
 [project]
 name = "nauta"
-version = "0.0.4"
-authors = [
-  { name="Raúl Cobiellas", email="raulodev@gmail.com" },
-]
+version = "0.0.5"
+authors = [{ name = "Raúl Cobiellas", email = "raulodev@gmail.com" }]
 description = "Línea de comandos para el nauta hogar Cuba"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
-dependencies = ["typer>=0.13.1" , "appdirs>=1.4.4" , "requests>=2.32.3"]
+dependencies = [
+  "typer>=0.13.1",
+  "appdirs>=1.4.4",
+  "requests>=2.32.3",
+  "beautifulsoup4>=4.12.3",
+]
 
 [project.urls]
 Homepage = "https://github.com/raulodev/nauta"

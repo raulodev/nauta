@@ -1,5 +1,5 @@
 APP_NAME = "nauta"
 APP_AUTHOR = "raulodev"
-HOST_URL = "https://secure.etecsa.net:8443"
-LOGOUT_URL = "https://secure.etecsa.net:8443/nauta_etecsa/OnlineURL/offline.jsp"
-LOGIN_URL = "https://secure.etecsa.net:8443/web/online.do"
+HOST_URL = "https://secure.etecsa.net:8443/"
+LOGOUT_URL = "https://secure.etecsa.net:8443/LogoutServlet"
+AVAILABLE_TIME_URL = "https://secure.etecsa.net:8443/EtecsaQueryServlet"

@@ -1,2 +1,4 @@
 .venv
 dist
+html
+test.py
