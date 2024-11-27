@@ -1,8 +1,8 @@
 import re
 from bs4 import BeautifulSoup
 import requests
-from .constants import HOST_URL, LOGOUT_URL, AVAILABLE_TIME_URL
-from .database import add_session, get_session, delete_session
+from nauta.constants import HOST_URL, LOGOUT_URL, AVAILABLE_TIME_URL
+from nauta.database import add_session, get_session, delete_session
 
 
 class NautaClient(object):

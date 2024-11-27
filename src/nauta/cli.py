@@ -1,8 +1,7 @@
-# pylint: disable=redefined-builtin
 import typer
-from .account import add, delete, list, default, password, info
-from .session import login, logout
-from .database import initialize_database
+from nauta.commands.account import add, delete, list, default, password, info
+from nauta.commands.session import login, logout
+from nauta.database import initialize_database
 
 
 initialize_database()

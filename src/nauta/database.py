@@ -1,8 +1,8 @@
 import sqlite3
 import os
 from appdirs import user_data_dir
-from .models import Account, Session
-from .constants import APP_NAME, APP_AUTHOR
+from nauta.models import Account, Session
+from nauta.constants import APP_NAME, APP_AUTHOR
 
 
 def get_global_db_path():
@@ -37,7 +37,7 @@ def initialize_database():
             username TEXT NOT NULL,
             wlanuserip TEXT NOT NULL,
             attribute_uuid TEXT NOT NULL,
-            created_at REAL DEFAULT (CAST(strftime('%f', 'now') AS REAL)))
+            created_at REAL DEFAULT (CAST(strftime('%f', 'now') AS REAL))
         )
     """
     )
@@ -46,7 +46,7 @@ def initialize_database():
         """
         CREATE TABLE IF NOT EXISTS secret (
             id INTEGER PRIMARY KEY CHECK (id = 1),
-            data TEXT NOT NULL,
+            data TEXT NOT NULL
         )
     """
     )
