@@ -1,5 +1,6 @@
-import sqlite3
 import os
+import sqlite3
+import secrets
 from appdirs import user_data_dir
 from nauta.models import Account, Session
 from nauta.constants import APP_NAME, APP_AUTHOR
@@ -51,8 +52,38 @@ def initialize_database():
     """
     )
 
+    secret = get_secret()
+    if not secret:
+        create_secret()
+
     connection.commit()
     connection.close()
+
+
+def create_secret():
+    """Función para crear la clave secreta"""
+    db_path = get_global_db_path()
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    secret = secrets.token_hex(16)
+    cursor.execute(
+        "INSERT INTO secret (data) VALUES (?)",
+        (secret,),
+    )
+
+    connection.commit()
+    connection.close()
+
+
+def get_secret():
+    """Función para obtener la clave secreta"""
+    db_path = get_global_db_path()
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    row = cursor.execute("SELECT data FROM secret").fetchone()
+    return row[0] if row else None
 
 
 def list_account() -> list[Account]:

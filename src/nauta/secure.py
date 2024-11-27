@@ -1,9 +1,11 @@
 import base64
 from hashlib import sha256
+from nauta.database import get_secret
 
 
-def generate_key(secret: str = "secret") -> bytes:
+def generate_key() -> bytes:
     """Generar una clave derivada de un string (clave simple)"""
+    secret = get_secret()
     return sha256(secret.encode()).digest()  # Derivar clave fija
 
 
