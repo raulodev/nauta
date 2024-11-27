@@ -115,6 +115,6 @@ def info(
         is_default = "✅" if account.is_default else "❌"
         typer.echo(f"- Correo: {account.email}")
         typer.echo(f"- Contraseña: {passw[0] + (len(passw) - 2) * "*" + passw[-1]}")
-        typer.echo(f"- Es por defecto: {is_default}")
+        typer.echo(f"- Es usuario por defecto: {is_default}")
     else:
         typer.echo(typer.style(f"No se encontró el usuario: {correo}", fg="yellow"))
