@@ -1,6 +1,8 @@
 import re
-from bs4 import BeautifulSoup
+import typer
 import requests
+from bs4 import BeautifulSoup
+from requests import ConnectionError
 from nauta.constants import HOST_URL, LOGOUT_URL, AVAILABLE_TIME_URL
 from nauta.database import add_session, get_session, delete_session
 
@@ -8,95 +10,194 @@ from nauta.database import add_session, get_session, delete_session
 class NautaClient(object):
 
     def __init__(self, correo, password):
-        self.user = correo
+        self.correo = correo
         self.password = password
 
     def login(self):
         """Función para iniciar sesión"""
 
-        resp = requests.get(HOST_URL, timeout=5)
+        try:
 
-        soup = BeautifulSoup(resp.text, "html.parser")
+            resp = requests.get(HOST_URL, timeout=5)
 
-        action = soup.find("form", id="formulario")["action"]
-        csrfhw = soup.find("input", {"name": "CSRFHW"})["value"]
-        wlanuserip = soup.find("input", {"name": "wlanuserip"})["value"]
-
-        resp = requests.post(
-            action,
-            data={
-                "username": self.user,
-                "password": self.password,
-                "CSRFHW": csrfhw,
-                "wlanuserip": wlanuserip,
-            },
-            headers={"content-type": "application/x-www-form-urlencoded"},
-            timeout=10,
-        )
-
-        if not resp.ok:
-            print("Mensaje:", resp.reason)
-            return
-
-        if not "online.do" in resp.url:
             soup = BeautifulSoup(resp.text, "html.parser")
-            script_text = soup.find_all("script")[-1].get_text()
-            match = re.search(r"alert\(\"(?P<reason>[^\"]*?)\"\)", script_text)
-            print("Mensaje:", match and match.groupdict().get("reason"))
-            return
 
-        m = re.search(r"ATTRIBUTE_UUID=(\w+)", resp.text)
+            action = soup.find("form", id="formulario")["action"]
+            csrfhw = soup.find("input", {"name": "CSRFHW"})["value"]
+            wlanuserip = soup.find("input", {"name": "wlanuserip"})["value"]
 
-        attribute_uuid = m.group(1) if m else None
+            resp = requests.post(
+                action,
+                data={
+                    "username": self.correo,
+                    "password": self.password,
+                    "CSRFHW": csrfhw,
+                    "wlanuserip": wlanuserip,
+                },
+                headers={"content-type": "application/x-www-form-urlencoded"},
+                timeout=10,
+            )
 
-        add_session(csrfhw, self.user, wlanuserip, attribute_uuid)
+            if not resp.ok:
+                typer.echo(typer.style(resp.reason, fg="red", bold=True))
+                return
+
+            if not "online.do" in resp.url:
+                soup = BeautifulSoup(resp.text, "html.parser")
+                script_text = soup.find_all("script")[-1].get_text()
+                match = re.search(r"alert\(\"(?P<reason>[^\"]*?)\"\)", script_text)
+                typer.echo(
+                    typer.style(
+                        match and match.groupdict().get("reason"), fg="red", bold=True
+                    )
+                )
+                return
+
+            m = re.search(r"ATTRIBUTE_UUID=(\w+)", resp.text)
+
+            attribute_uuid = m.group(1) if m else None
+
+            session = get_session()
+
+            if session:
+                typer.echo(
+                    typer.style(
+                        'Cierre la sesión actual con el comando: "nauta logout"',
+                        fg="yellow",
+                        bold=True,
+                    )
+                )
+                return
+
+            add_session(csrfhw, self.correo, wlanuserip, attribute_uuid)
+
+            typer.echo(
+                typer.style(
+                    ("Sesión iniciada"),
+                    fg="green",
+                    bold=True,
+                ),
+                nl=False,
+            )
+            available_time = self.available_time()
+
+            if available_time:
+
+                typer.echo(
+                    message=typer.style(
+                        f": {available_time} tiempo disponible", bold=True
+                    ),
+                )
+
+        except ConnectionError:
+            typer.echo(
+                typer.style(
+                    ("No se pudo conectar con el servidor"), fg="red", bold=True
+                )
+            )
 
     def logout(self):
         """Función para cerrar sesión"""
 
-        session = get_session()
+        try:
+            session = get_session()
 
-        resp = requests.post(
-            LOGOUT_URL,
-            data={
-                "CSRFHW": session.csrfhw,
-                "username": session.username,
-                "ATTRIBUTE_UUID": session.attribute_uuid,
-                "wlanuserip": session.wlanuserip,
-            },
-            headers={"content-type": "application/x-www-form-urlencoded"},
-            timeout=10,
-        )
+            if not session:
+                typer.echo(
+                    typer.style(
+                        'Primero inicie sesión con el comando: "nauta login"',
+                        fg="yellow",
+                        bold=True,
+                    )
+                )
+                return
 
-        if not resp.ok:
-            print("Mensaje:", resp.reason)
-            return
+            available_time = self.available_time()
 
-        if "SUCCESS" not in resp.text.upper():
-            print("Mensaje:", resp.text[:100])
-            return
+            resp = requests.post(
+                LOGOUT_URL,
+                data={
+                    "CSRFHW": session.csrfhw,
+                    "username": session.username,
+                    "ATTRIBUTE_UUID": session.attribute_uuid,
+                    "wlanuserip": session.wlanuserip,
+                },
+                headers={"content-type": "application/x-www-form-urlencoded"},
+                timeout=10,
+            )
 
-        delete_session()
+            if not resp.ok:
+                typer.echo(typer.style(resp.reason, fg="red", bold=True))
+                return
 
-    def available_time(self):
+            if "SUCCESS" not in resp.text.upper():
+                typer.echo(typer.style(resp.text[:100], fg="red", bold=True))
+                return
+
+            delete_session()
+
+            typer.echo(
+                typer.style(
+                    ("Sesión cerrada"),
+                    fg="green",
+                    bold=True,
+                ),
+                nl=False,
+            )
+
+            if available_time:
+
+                typer.echo(
+                    message=typer.style(
+                        f": {available_time} tiempo restante", bold=True
+                    ),
+                )
+
+        except ConnectionError:
+            typer.echo(
+                typer.style(
+                    ("No se pudo conectar con el servidor"), fg="red", bold=True
+                )
+            )
+
+    def available_time(self) -> str:
         """Función para obtener el tiempo disponible"""
 
-        session = get_session()
+        try:
 
-        resp = requests.post(
-            AVAILABLE_TIME_URL,
-            data={
-                "op": "getLeftTime",
-                "ATTRIBUTE_UUID": session.attribute_uuid,
-                "CSRFHW": session.csrfhw,
-                "username": session.username,
-            },
-            headers={"content-type": "application/x-www-form-urlencoded"},
-            timeout=10,
-        )
+            session = get_session()
 
-        if not resp.ok:
-            print("Mensaje:", resp.reason)
-            return
+            if not session:
+                typer.echo(
+                    typer.style(
+                        'Primero inicie sesión con el comando: "nauta login"',
+                        fg="yellow",
+                        bold=True,
+                    )
+                )
+                return
 
-        return resp.text
+            resp = requests.post(
+                AVAILABLE_TIME_URL,
+                data={
+                    "op": "getLeftTime",
+                    "ATTRIBUTE_UUID": session.attribute_uuid,
+                    "CSRFHW": session.csrfhw,
+                    "username": session.username,
+                },
+                headers={"content-type": "application/x-www-form-urlencoded"},
+                timeout=10,
+            )
+
+            if not resp.ok:
+                typer.echo(typer.style(resp.reason, fg="red", bold=True))
+                return
+
+            return resp.text
+
+        except ConnectionError:
+            typer.echo(
+                typer.style(
+                    ("No se pudo conectar con el servidor"), fg="red", bold=True
+                )
+            )

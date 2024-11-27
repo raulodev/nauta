@@ -92,25 +92,28 @@ def list_account() -> list[Account]:
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
-    # Leer datos
     cursor.execute("SELECT * FROM accounts")
     rows = cursor.fetchall()
 
-    # Mostrar datos
     return [Account(*row) for row in rows]
 
 
-def get_account(email: str) -> Account:
+def get_account(email: str = None, is_default: bool = None) -> Account:
     """Función para obtener una cuenta"""
     db_path = get_global_db_path()
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
-    # Leer datos
-    cursor.execute("SELECT * FROM accounts WHERE email = ?", (email,))
+    if email:
+
+        cursor.execute("SELECT * FROM accounts WHERE email = ?", (email,))
+
+    if is_default:
+
+        cursor.execute("SELECT * FROM accounts WHERE is_default = 1")
+
     row = cursor.fetchone()
 
-    # Mostrar datos
     return Account(*row) if row else None
 
 
@@ -125,7 +128,6 @@ def add_account(email: str, password: str, is_default: bool = True) -> None:
         for account in accounts:
             update_account(account.email)
 
-    # Agregar datos
     cursor.execute(
         """
         INSERT INTO accounts (email, password, is_default)
@@ -144,7 +146,6 @@ def delete_account(email: str) -> None:
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
-    # Eliminar datos
     cursor.execute("DELETE FROM accounts WHERE email = ?", (email,))
 
     connection.commit()
@@ -157,7 +158,6 @@ def update_password(email: str, password: str) -> None:
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
-    # Actualizar datos
     cursor.execute(
         """
         UPDATE accounts
@@ -182,7 +182,6 @@ def update_account(email: str, is_default: bool = False) -> None:
         for account in accounts:
             update_account(account.email)
 
-    # Actualizar datos
     cursor.execute(
         """
         UPDATE accounts
@@ -204,7 +203,6 @@ def add_session(
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
-    # Agregar datos
     cursor.execute(
         """
         INSERT INTO session (csrfhw, username, wlanuserip, attribute_uuid)
@@ -235,9 +233,7 @@ def get_session():
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
-    # Leer datos
-    cursor.execute("SELECT * FROM session WHERE id = ?", (1,))
+    cursor.execute("SELECT * FROM session WHERE id = 1")
     row = cursor.fetchone()
 
-    # Mostrar datos
     return Session(*row) if row else None

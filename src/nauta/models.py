@@ -16,3 +16,4 @@ class Session:
     username: str
     wlanuserip: str
     attribute_uuid: str
+    created_at: int

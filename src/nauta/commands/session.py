@@ -1,10 +1,54 @@
+import typer
+from nauta.client import NautaClient
+from nauta.database import get_account
+from nauta.secure import decrypt_password, generate_key
+
+
 def login():
     """Inicia sesión en el nauta hogar"""
 
-    print("Iniciando sesión")
+    account = get_account(is_default=True)
+
+    if account:
+        password = decrypt_password(account.password, generate_key())
+        nauta_client = NautaClient(correo=account.email, password=password)
+        nauta_client.login()
+
+    else:
+        typer.echo(typer.style("Establece un usuario por defecto", fg="yellow"))
 
 
 def logout():
-    """Termina sesión en el nauta hogar"""
+    """cierra la sesión del nauta hogar"""
 
-    print("Terminando sesión")
+    account = get_account(is_default=True)
+
+    if account:
+        password = decrypt_password(account.password, generate_key())
+        nauta_client = NautaClient(correo=account.email, password=password)
+        nauta_client.logout()
+
+    else:
+        typer.echo(typer.style("Establece un usuario por defecto", fg="yellow"))
+
+
+def time():
+    """Muestra el tiempo disponible"""
+
+    account = get_account(is_default=True)
+
+    if account:
+        password = decrypt_password(account.password, generate_key())
+        nauta_client = NautaClient(correo=account.email, password=password)
+        available_time = nauta_client.available_time()
+
+        if available_time:
+
+            typer.echo(
+                typer.style(
+                    f"Tiempo disponible: {available_time}", fg="cyan", bold=True
+                )
+            )
+
+    else:
+        typer.echo(typer.style("Establece un usuario por defecto", fg="yellow"))

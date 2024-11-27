@@ -1,7 +1,7 @@
 # pylint: disable=w0622
 import typer
 from nauta.commands.account import add, delete, list, default, password, info
-from nauta.commands.session import login, logout
+from nauta.commands.session import login, logout, time
 from nauta.database import initialize_database
 
 
@@ -17,6 +17,7 @@ app.command()(password)
 app.command()(info)
 app.command()(login)
 app.command()(logout)
+app.command()(time)
 
 if __name__ == "__main__":
     app()
