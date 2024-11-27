@@ -2,7 +2,7 @@ import re
 import typer
 import requests
 from bs4 import BeautifulSoup
-from requests import ConnectionError
+from requests import ConnectionError, ReadTimeout
 from nauta.constants import HOST_URL, LOGOUT_URL, AVAILABLE_TIME_URL
 from nauta.database import add_session, get_session, delete_session
 
@@ -18,7 +18,7 @@ class NautaClient(object):
 
         try:
 
-            resp = requests.get(HOST_URL, timeout=5)
+            resp = requests.get(HOST_URL, timeout=60)
 
             soup = BeautifulSoup(resp.text, "html.parser")
 
@@ -35,7 +35,7 @@ class NautaClient(object):
                     "wlanuserip": wlanuserip,
                 },
                 headers={"content-type": "application/x-www-form-urlencoded"},
-                timeout=10,
+                timeout=60,
             )
 
             if not resp.ok:
@@ -89,7 +89,7 @@ class NautaClient(object):
                     ),
                 )
 
-        except ConnectionError:
+        except (ConnectionError, ReadTimeout):
             typer.echo(
                 typer.style(
                     ("No se pudo conectar con el servidor"), fg="red", bold=True
@@ -123,7 +123,7 @@ class NautaClient(object):
                     "wlanuserip": session.wlanuserip,
                 },
                 headers={"content-type": "application/x-www-form-urlencoded"},
-                timeout=10,
+                timeout=60,
             )
 
             if not resp.ok:
@@ -153,7 +153,7 @@ class NautaClient(object):
                     ),
                 )
 
-        except ConnectionError:
+        except (ConnectionError, ReadTimeout):
             typer.echo(
                 typer.style(
                     ("No se pudo conectar con el servidor"), fg="red", bold=True
@@ -186,7 +186,7 @@ class NautaClient(object):
                     "username": session.username,
                 },
                 headers={"content-type": "application/x-www-form-urlencoded"},
-                timeout=10,
+                timeout=60,
             )
 
             if not resp.ok:
@@ -195,7 +195,7 @@ class NautaClient(object):
 
             return resp.text
 
-        except ConnectionError:
+        except (ConnectionError, ReadTimeout):
             typer.echo(
                 typer.style(
                     ("No se pudo conectar con el servidor"), fg="red", bold=True
