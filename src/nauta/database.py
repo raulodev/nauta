@@ -13,11 +13,17 @@ def get_global_db_path():
     return os.path.join(data_dir, "data.db")
 
 
-def initialize_database():
-    """Crear tabla si no existe"""
+def create_conn():
+
     db_path = get_global_db_path()
     connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+    return connection, connection.cursor()
+
+
+def initialize_database():
+    """Crear tabla si no existe"""
+
+    connection, cursor = create_conn()
 
     cursor.execute(
         """
@@ -62,9 +68,8 @@ def initialize_database():
 
 def create_secret():
     """Función para crear la clave secreta"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+
+    connection, cursor = create_conn()
 
     secret = secrets.token_hex(16)
     cursor.execute(
@@ -78,19 +83,17 @@ def create_secret():
 
 def get_secret():
     """Función para obtener la clave secreta"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+
+    _, cursor = create_conn()
 
     row = cursor.execute("SELECT data FROM secret").fetchone()
+
     return row[0] if row else None
 
 
 def list_account() -> list[Account]:
     """Función para listar las cuentas"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+    _, cursor = create_conn()
 
     cursor.execute("SELECT * FROM accounts")
     rows = cursor.fetchall()
@@ -100,9 +103,7 @@ def list_account() -> list[Account]:
 
 def get_account(email: str = None, is_default: bool = None) -> Account:
     """Función para obtener una cuenta"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+    _, cursor = create_conn()
 
     if email:
 
@@ -119,9 +120,8 @@ def get_account(email: str = None, is_default: bool = None) -> Account:
 
 def add_account(email: str, password: str, is_default: bool = True) -> None:
     """Función para agregar una nueva cuenta"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+
+    connection, cursor = create_conn()
 
     if is_default:
         accounts = list_account()
@@ -142,9 +142,7 @@ def add_account(email: str, password: str, is_default: bool = True) -> None:
 
 def delete_account(email: str) -> None:
     """Función para eliminar una cuenta"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+    connection, cursor = create_conn()
 
     cursor.execute("DELETE FROM accounts WHERE email = ?", (email,))
 
@@ -154,9 +152,8 @@ def delete_account(email: str) -> None:
 
 def update_password(email: str, password: str) -> None:
     """Función para actualizar una contraseña de usuario"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+
+    connection, cursor = create_conn()
 
     cursor.execute(
         """
@@ -173,9 +170,8 @@ def update_password(email: str, password: str) -> None:
 
 def update_account(email: str, is_default: bool = False) -> None:
     """Función para actualizar una cuenta"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+
+    connection, cursor = create_conn()
 
     if is_default:
         accounts = list_account()
@@ -199,9 +195,8 @@ def add_session(
     csrfhw: str, username: str, wlanuserip: str, attribute_uuid: str
 ) -> None:
     """Función para agregar una nueva sesión"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+
+    connection, cursor = create_conn()
 
     cursor.execute(
         """
@@ -217,9 +212,8 @@ def add_session(
 
 def delete_session() -> None:
     """Función para eliminar una sesión"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+
+    connection, cursor = create_conn()
 
     cursor.execute("DELETE FROM session")
 
@@ -229,9 +223,8 @@ def delete_session() -> None:
 
 def get_session():
     """Función para obtener una sesión"""
-    db_path = get_global_db_path()
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+
+    _, cursor = create_conn()
 
     cursor.execute("SELECT * FROM session WHERE id = 1")
     row = cursor.fetchone()
