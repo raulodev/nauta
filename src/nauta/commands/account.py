@@ -111,10 +111,13 @@ def info(
     account = get_account(correo)
     if account:
         typer.echo(typer.style(f"👤 Información del usuario: {correo}", fg="cyan"))
+
         passw = decrypt_password(account.password, generate_key())
         is_default = "✅" if account.is_default else "❌"
+        hidden_passw = passw[0] + (len(passw) - 1) * "*"
+
         typer.echo(f"- Correo: {account.email}")
-        typer.echo(f"- Contraseña: {passw[0] + (len(passw) - 2) * "*" + passw[-1]}")
+        typer.echo(f"- Contraseña: {hidden_passw}")
         typer.echo(f"- Es usuario por defecto: {is_default}")
     else:
         typer.echo(typer.style(f"No se encontró el usuario: {correo}", fg="yellow"))
