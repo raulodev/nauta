@@ -5,7 +5,7 @@ Línea de comandos para el nauta hogar Cuba
 ## Instalación con pipx
 
 ```bash
-pipx install nauta
+pipx install nauta --force
 ```
 
 ## Guía

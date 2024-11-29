@@ -1,4 +1,5 @@
 .venv
+.wvenv
 dist
 html
 test.py

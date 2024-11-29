@@ -1,4 +1,5 @@
 import os
+from typing import List
 import sqlite3
 import secrets
 from appdirs import user_data_dir
@@ -91,7 +92,7 @@ def get_secret():
     return row[0] if row else None
 
 
-def list_account() -> list[Account]:
+def list_account() -> List[Account]:
     """Función para listar las cuentas"""
     _, cursor = create_conn()
 
