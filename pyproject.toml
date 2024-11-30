@@ -7,7 +7,7 @@ nauta = "nauta.cli:app"
 
 [project]
 name = "nauta"
-version = "0.0.7"
+version = "0.0.8"
 authors = [{ name = "Raúl Cobiellas", email = "raulodev@gmail.com" }]
 description = "Línea de comandos para el nauta hogar Cuba"
 readme = "README.md"
