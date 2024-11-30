@@ -89,7 +89,7 @@ class NautaClient(object):
                     ),
                 )
 
-        except (ConnectionError, ReadTimeout):
+        except (ConnectionError, ReadTimeout) :
             typer.echo(
                 typer.style(
                     ("No se pudo conectar con el servidor"), fg="red", bold=True

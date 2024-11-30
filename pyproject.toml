@@ -18,10 +18,11 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = [
-  "typer>=0.13.1",
-  "appdirs>=1.4.4",
-  "requests>=2.32.3",
-  "beautifulsoup4>=4.12.3",
+  "typer==0.13.1",
+  "appdirs==1.4.4",
+  "requests==2.32.3",
+  "beautifulsoup4==4.12.3",
+  "urllib3==1.26.18"
 ]
 
 [project.urls]
