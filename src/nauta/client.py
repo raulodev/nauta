@@ -89,14 +89,14 @@ class NautaClient(object):
                     ),
                 )
 
-        except (ConnectionError, ReadTimeout) :
+        except (ConnectionError, ReadTimeout):
             typer.echo(
                 typer.style(
                     ("No se pudo conectar con el servidor"), fg="red", bold=True
                 )
             )
 
-    def logout(self):
+    def logout(self, force=False):
         """Función para cerrar sesión"""
 
         try:
@@ -126,11 +126,17 @@ class NautaClient(object):
                 timeout=60,
             )
 
-            if not resp.ok:
+            if not resp.ok and not force:
                 typer.echo(typer.style(resp.reason, fg="red", bold=True))
                 return
 
-            if "SUCCESS" not in resp.text.upper():
+            if "FAILURE" in resp.text.upper() and not force:
+                typer.echo(
+                    typer.style("No se pudo cerrar la sesión", fg="red", bold=True)
+                )
+                return
+
+            if "SUCCESS" not in resp.text.upper() and not force:
                 typer.echo(typer.style(resp.text[:100], fg="red", bold=True))
                 return
 
@@ -138,14 +144,14 @@ class NautaClient(object):
 
             typer.echo(
                 typer.style(
-                    ("Sesión cerrada"),
+                    ("Sesión cerrada" if not force else "Sesión eliminada"),
                     fg="green",
                     bold=True,
                 ),
-                nl=False,
+                nl=force,
             )
 
-            if available_time:
+            if available_time and not force:
 
                 typer.echo(
                     message=typer.style(
