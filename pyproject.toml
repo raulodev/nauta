@@ -7,7 +7,7 @@ nauta = "nauta.cli:app"
 
 [project]
 name = "nauta"
-version = "0.0.9"
+version = "0.1.0"
 authors = [{ name = "Raúl Cobiellas", email = "raulodev@gmail.com" }]
 description = "Línea de comandos para el nauta hogar Cuba"
 readme = "README.md"
@@ -22,7 +22,7 @@ dependencies = [
   "appdirs==1.4.4",
   "requests==2.32.3",
   "beautifulsoup4==4.12.3",
-  "urllib3==1.26.18"
+  "urllib3==1.26.18",
 ]
 
 [project.urls]

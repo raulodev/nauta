@@ -17,6 +17,17 @@ class NautaClient(object):
         """Función para iniciar sesión"""
 
         try:
+            session = get_session()
+
+            if session:
+                typer.echo(
+                    typer.style(
+                        'Cierre la sesión actual con el comando: "nauta logout"',
+                        fg="yellow",
+                        bold=True,
+                    )
+                )
+                return
 
             resp = requests.get(HOST_URL, timeout=60)
 
@@ -56,18 +67,6 @@ class NautaClient(object):
             m = re.search(r"ATTRIBUTE_UUID=(\w+)", resp.text)
 
             attribute_uuid = m.group(1) if m else None
-
-            session = get_session()
-
-            if session:
-                typer.echo(
-                    typer.style(
-                        'Cierre la sesión actual con el comando: "nauta logout"',
-                        fg="yellow",
-                        bold=True,
-                    )
-                )
-                return
 
             add_session(csrfhw, self.correo, wlanuserip, attribute_uuid)
 
