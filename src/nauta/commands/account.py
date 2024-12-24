@@ -1,14 +1,15 @@
 import typer
 from typing_extensions import Annotated
+
 from nauta.database import (
-    list_account,
     add_account,
     delete_account,
+    get_account,
+    list_account,
     update_account,
     update_password,
-    get_account,
 )
-from nauta.secure import encrypt_password, decrypt_password, generate_key
+from nauta.secure import decrypt_password, encrypt_password, generate_key
 
 
 def add(

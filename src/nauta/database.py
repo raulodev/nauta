@@ -1,10 +1,12 @@
 import os
-from typing import List
-import sqlite3
 import secrets
+import sqlite3
+from typing import List
+
 from appdirs import user_data_dir
+
+from nauta.constants import APP_AUTHOR, APP_NAME
 from nauta.models import Account, Session
-from nauta.constants import APP_NAME, APP_AUTHOR
 
 
 def get_global_db_path():

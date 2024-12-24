@@ -1,10 +1,12 @@
 import re
-import typer
+
 import requests
+import typer
 from bs4 import BeautifulSoup
 from requests import ConnectionError, ReadTimeout
-from nauta.constants import HOST_URL, LOGOUT_URL, AVAILABLE_TIME_URL
-from nauta.database import add_session, get_session, delete_session
+
+from nauta.constants import AVAILABLE_TIME_URL, HOST_URL, LOGOUT_URL
+from nauta.database import add_session, delete_session, get_session
 
 
 class NautaClient(object):
@@ -111,33 +113,37 @@ class NautaClient(object):
                 )
                 return
 
-            available_time = self.available_time()
+            available_time = None
 
-            resp = requests.post(
-                LOGOUT_URL,
-                data={
-                    "CSRFHW": session.csrfhw,
-                    "username": session.username,
-                    "ATTRIBUTE_UUID": session.attribute_uuid,
-                    "wlanuserip": session.wlanuserip,
-                },
-                headers={"content-type": "application/x-www-form-urlencoded"},
-                timeout=60,
-            )
+            if not force:
 
-            if not resp.ok and not force:
-                typer.echo(typer.style(resp.reason, fg="red", bold=True))
-                return
+                available_time = self.available_time()
 
-            if "FAILURE" in resp.text.upper() and not force:
-                typer.echo(
-                    typer.style("No se pudo cerrar la sesión", fg="red", bold=True)
+                resp = requests.post(
+                    LOGOUT_URL,
+                    data={
+                        "CSRFHW": session.csrfhw,
+                        "username": session.username,
+                        "ATTRIBUTE_UUID": session.attribute_uuid,
+                        "wlanuserip": session.wlanuserip,
+                    },
+                    headers={"content-type": "application/x-www-form-urlencoded"},
+                    timeout=60,
                 )
-                return
 
-            if "SUCCESS" not in resp.text.upper() and not force:
-                typer.echo(typer.style(resp.text[:100], fg="red", bold=True))
-                return
+                if not resp.ok:
+                    typer.echo(typer.style(resp.reason, fg="red", bold=True))
+                    return
+
+                if "FAILURE" in resp.text.upper() and not force:
+                    typer.echo(
+                        typer.style("No se pudo cerrar la sesión", fg="red", bold=True)
+                    )
+                    return
+
+                if "SUCCESS" not in resp.text.upper() and not force:
+                    typer.echo(typer.style(resp.text[:100], fg="red", bold=True))
+                    return
 
             delete_session()
 
@@ -150,11 +156,12 @@ class NautaClient(object):
                 nl=force,
             )
 
-            if available_time and not force:
+            if available_time:
 
                 typer.echo(
                     message=typer.style(
-                        f": {available_time} tiempo restante", bold=True
+                        f": {available_time} tiempo disponible para la próxima conexión",
+                        bold=True,
                     ),
                 )
 
@@ -202,7 +209,5 @@ class NautaClient(object):
 
         except (ConnectionError, ReadTimeout):
             typer.echo(
-                typer.style(
-                    ("No se pudo conectar con el servidor"), fg="red", bold=True
-                )
+                typer.style((" No se pudo obtener el tiempo"), fg="red", bold=True)
             )

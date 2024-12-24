@@ -1,5 +1,7 @@
 from typing import Annotated
+
 import typer
+
 from nauta.client import NautaClient
 from nauta.database import get_account
 from nauta.secure import decrypt_password, generate_key

@@ -1,9 +1,9 @@
 # pylint: disable=w0622
 import typer
-from nauta.commands.account import add, delete, list, default, password, info
+
+from nauta.commands.account import add, default, delete, info, list, password
 from nauta.commands.session import login, logout, time
 from nauta.database import initialize_database
-
 
 initialize_database()
 

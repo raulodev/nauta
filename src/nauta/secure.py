@@ -1,5 +1,6 @@
 import base64
 from hashlib import sha256
+
 from nauta.database import get_secret
 
 
