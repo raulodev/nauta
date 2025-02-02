@@ -11,6 +11,11 @@ from nauta.database import add_session, delete_session, get_session
 
 class NautaClient(object):
 
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    }
+
     def __init__(self, correo, password):
         self.correo = correo
         self.password = password
@@ -47,7 +52,7 @@ class NautaClient(object):
                     "CSRFHW": csrfhw,
                     "wlanuserip": wlanuserip,
                 },
-                headers={"content-type": "application/x-www-form-urlencoded"},
+                headers=self.headers,
                 timeout=60,
             )
 
@@ -127,7 +132,7 @@ class NautaClient(object):
                         "ATTRIBUTE_UUID": session.attribute_uuid,
                         "wlanuserip": session.wlanuserip,
                     },
-                    headers={"content-type": "application/x-www-form-urlencoded"},
+                    headers=self.headers,
                     timeout=60,
                 )
 
@@ -197,17 +202,16 @@ class NautaClient(object):
                     "CSRFHW": session.csrfhw,
                     "username": session.username,
                 },
-                headers={"content-type": "application/x-www-form-urlencoded"},
+                headers=self.headers,
                 timeout=60,
             )
 
-            if not resp.ok:
-                typer.echo(typer.style(resp.reason, fg="red", bold=True))
-                return
+            if not resp.ok or "error" in resp.text:
+                raise ConnectionError
 
             return resp.text
 
         except (ConnectionError, ReadTimeout):
             typer.echo(
-                typer.style((" No se pudo obtener el tiempo"), fg="red", bold=True)
+                typer.style(("No se pudo obtener el tiempo"), fg="red", bold=True)
             )
