@@ -48,7 +48,7 @@ def delete(
         typer.echo(typer.style(f"No se encontró el usuario: {correo}", fg="yellow"))
 
 
-def list():  # pylint: disable=W0622
+def display_accounts():  # pylint: disable=W0622
     """Lista todos los usuarios"""
     accounts = list_account()
 
@@ -59,9 +59,9 @@ def list():  # pylint: disable=W0622
             )
         )
 
-        for index, account in enumerate(accounts, start=1):
+        for account in accounts:
             is_default = "✅" if account.is_default else ""
-            typer.echo(f"{index}. {account.email} {is_default}")
+            typer.echo(f"{account.id}. {account.email} {is_default}")
 
     else:
 
