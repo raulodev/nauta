@@ -14,10 +14,19 @@ from nauta.secure import decrypt_password, encrypt_password, generate_key
 
 
 def add(
-    correo: Annotated[str, typer.Argument(help="Correo del usuario")],
-    password: Annotated[str, typer.Argument(help="Contraseña del usuario")],
+    correo: Annotated[
+        str,
+        typer.Argument(
+            help="Correo del usuario ejemplo: usuario@nauta.com.cu", show_default=False
+        ),
+    ],
+    # pylint: disable=W0621
+    password: Annotated[
+        str,
+        typer.Argument(help="Contraseña del usuario", show_default=False),
+    ],
 ):
-    """Añade un nuevo usuario"""
+    """Añade un nuevo usuario. Las contraseñas se almacenan de forma segura."""
 
     account = get_account(correo)
 
@@ -30,7 +39,9 @@ def add(
 
 
 def delete(
-    correo: Annotated[str, typer.Argument(help="Correo del usuario")],
+    correo: Annotated[
+        str, typer.Argument(help="Correo del usuario", show_default=False)
+    ],
 ):
     """Elimina un usuario"""
     account = get_account(correo)
@@ -49,7 +60,7 @@ def delete(
         typer.echo(typer.style(f"No se encontró el usuario: {correo}", fg="yellow"))
 
 
-def display_accounts():  # pylint: disable=W0622
+def display_accounts():
     """Lista todos los usuarios"""
     accounts = list_account()
 
@@ -70,9 +81,11 @@ def display_accounts():  # pylint: disable=W0622
 
 
 def default(
-    correo: Annotated[str, typer.Argument(help="Correo del usuario")],
+    correo: Annotated[
+        str, typer.Argument(help="Correo del usuario", show_default=False)
+    ],
 ):
-    """Establece el usuario por defecto"""
+    """Establece el usuario por defecto que se usará para iniciar sesión"""
 
     account = get_account(correo)
     if account:
@@ -88,12 +101,14 @@ def default(
 
 
 def password(
-    correo: Annotated[str, typer.Argument(help="Correo del usuario")],
+    correo: Annotated[
+        str, typer.Argument(help="Correo del usuario", show_default=False)
+    ],
     password: Annotated[  # pylint: disable=W0621
-        str, typer.Argument(help="Nueva contraseña del usuario")
+        str, typer.Argument(help="Nueva contraseña del usuario", show_default=False)
     ],
 ):
-    """Establece la contraseña del usuario"""
+    """Establece una nueva contraseña para el usuario"""
 
     account = get_account(correo)
     if account:
@@ -106,7 +121,9 @@ def password(
 
 
 def info(
-    correo: Annotated[str, typer.Argument(help="Correo del usuario")],
+    correo: Annotated[
+        str, typer.Argument(help="Correo del usuario", show_default=False)
+    ],
 ):
     """Muestra información del usuario"""
 
@@ -115,7 +132,7 @@ def info(
         typer.echo(typer.style(f"👤 Información del usuario: {correo}", fg="cyan"))
 
         passw = decrypt_password(account.password, generate_key())
-        is_default = "✅" if account.is_default else "❌"
+        is_default = "✅ Si" if account.is_default else "❌ No"
         hidden_passw = passw[0] + (len(passw) - 1) * "*"
 
         typer.echo(f"- Correo: {account.email}")
