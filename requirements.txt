@@ -1,14 +1,19 @@
 # dev dependencies
 build==1.2.2.post1
 twine==5.1.1
-typer==0.13.1
 pipx==1.7.1
+
+# testing dependencies
+pytest==8.4.1
+requests-mock==1.12.1
+
+# dependencies 
+typer==0.16.0
 appdirs==1.4.4
-requests==2.32.3
+requests==2.32.4
 beautifulsoup4==4.12.3
 apscheduler==3.11.0
 urllib3==1.26.18
-pytest==8.4.1
 
 # pipx install . --force
 # pipx run --spec . nauta --help
