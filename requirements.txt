@@ -8,6 +8,7 @@ requests==2.32.3
 beautifulsoup4==4.12.3
 apscheduler==3.11.0
 urllib3==1.26.18
+pytest==8.4.1
 
 # pipx install . --force
 # pipx run --spec . nauta --help

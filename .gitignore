@@ -4,3 +4,5 @@ dist
 html
 test.py
 __pycache__
+*.db
+.vscode
