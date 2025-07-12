@@ -1,6 +1,7 @@
 import typer
 from typing_extensions import Annotated
 
+# pylint: disable=E0401
 from nauta.database import (
     add_account,
     delete_account,

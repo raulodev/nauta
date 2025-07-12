@@ -2,6 +2,7 @@ from typing import Annotated
 
 import typer
 
+# pylint: disable=E0401
 from nauta.client import NautaClient
 from nauta.database import get_account
 from nauta.secure import decrypt_password, generate_key
@@ -22,7 +23,10 @@ def login():
 
 
 def logout(
-    force: Annotated[bool, typer.Option(help="Forzar cierre de sesión")] = False
+    force: Annotated[
+        bool,
+        typer.Option("--force/--no-force", "-f/-F", help="Forzar cierre de sesión"),
+    ] = False,
 ):
     """Cierra la sesión del nauta hogar"""
 
