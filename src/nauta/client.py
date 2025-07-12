@@ -1,22 +1,24 @@
 import re
 
 import requests
-import typer
 from bs4 import BeautifulSoup
+
+# pylint: disable=W0622
 from requests import ConnectionError, ReadTimeout
 
 from nauta.constants import AVAILABLE_TIME_URL, HOST_URL, LOGOUT_URL
-from nauta.database import add_session, delete_session, get_session
+from nauta.database import add_session, delete_session
+from nauta.models import NautaClientResponse, Session
 
 
-class NautaClient(object):
+class NautaClient:
 
     headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
     }
 
-    def __init__(self, correo, password):
+    def __init__(self, correo: str = None, password: str = None):
         self.correo = correo
         self.password = password
 
@@ -24,17 +26,6 @@ class NautaClient(object):
         """Función para iniciar sesión"""
 
         try:
-            session = get_session()
-
-            if session:
-                typer.echo(
-                    typer.style(
-                        'Cierre la sesión actual con el comando: "nauta logout"',
-                        fg="yellow",
-                        bold=True,
-                    )
-                )
-                return
 
             resp = requests.get(HOST_URL, timeout=60)
 
@@ -53,23 +44,19 @@ class NautaClient(object):
                     "wlanuserip": wlanuserip,
                 },
                 headers=self.headers,
-                timeout=60,
+                timeout=30,
             )
 
             if not resp.ok:
-                typer.echo(typer.style(resp.reason, fg="red", bold=True))
-                return
+                return NautaClientResponse(error=True, message=resp.reason)
 
             if not "online.do" in resp.url:
                 soup = BeautifulSoup(resp.text, "html.parser")
                 script_text = soup.find_all("script")[-1].get_text()
                 match = re.search(r"alert\(\"(?P<reason>[^\"]*?)\"\)", script_text)
-                typer.echo(
-                    typer.style(
-                        match and match.groupdict().get("reason"), fg="red", bold=True
-                    )
+                return NautaClientResponse(
+                    error=True, message=match and match.groupdict().get("reason")
                 )
-                return
 
             m = re.search(r"ATTRIBUTE_UUID=(\w+)", resp.text)
 
@@ -77,52 +64,19 @@ class NautaClient(object):
 
             add_session(csrfhw, self.correo, wlanuserip, attribute_uuid)
 
-            typer.echo(
-                typer.style(
-                    ("Sesión iniciada"),
-                    fg="green",
-                    bold=True,
-                ),
-                nl=False,
-            )
-            available_time = self.available_time()
-
-            if available_time:
-
-                typer.echo(
-                    message=typer.style(
-                        f": {available_time} tiempo disponible", bold=True
-                    ),
-                )
+            return NautaClientResponse(error=False, message="Sesión iniciada")
 
         except (ConnectionError, ReadTimeout):
-            typer.echo(
-                typer.style(
-                    ("No se pudo conectar con el servidor"), fg="red", bold=True
-                )
+            return NautaClientResponse(
+                error=True, message="No se pudo conectar con el servidor"
             )
 
-    def logout(self, force=False):
+    def logout(self, session: Session, force=False):
         """Función para cerrar sesión"""
 
         try:
-            session = get_session()
-
-            if not session:
-                typer.echo(
-                    typer.style(
-                        'Primero inicie sesión con el comando: "nauta login"',
-                        fg="yellow",
-                        bold=True,
-                    )
-                )
-                return
-
-            available_time = None
 
             if not force:
-
-                available_time = self.available_time()
 
                 resp = requests.post(
                     LOGOUT_URL,
@@ -133,66 +87,42 @@ class NautaClient(object):
                         "wlanuserip": session.wlanuserip,
                     },
                     headers=self.headers,
-                    timeout=60,
+                    timeout=30,
                 )
 
                 if not resp.ok:
-                    typer.echo(typer.style(resp.reason, fg="red", bold=True))
-                    return
+                    return NautaClientResponse(error=True, message=resp.reason)
 
                 if "FAILURE" in resp.text.upper() and not force:
-                    typer.echo(
-                        typer.style("No se pudo cerrar la sesión", fg="red", bold=True)
+                    return NautaClientResponse(
+                        error=True, message="No se pudo cerrar la sesión"
                     )
-                    return
 
                 if "SUCCESS" not in resp.text.upper() and not force:
-                    typer.echo(typer.style(resp.text[:100], fg="red", bold=True))
-                    return
+                    return NautaClientResponse(error=True, message=resp.text[:100])
 
             delete_session()
 
-            typer.echo(
-                typer.style(
-                    ("Sesión cerrada" if not force else "Sesión eliminada"),
-                    fg="green",
-                    bold=True,
-                ),
-                nl=force,
+            return NautaClientResponse(
+                error=False,
+                message="Sesión cerrada" if not force else "Sesión eliminada",
             )
-
-            if available_time:
-
-                typer.echo(
-                    message=typer.style(
-                        f": {available_time} tiempo disponible para la próxima conexión",
-                        bold=True,
-                    ),
-                )
 
         except (ConnectionError, ReadTimeout):
-            typer.echo(
-                typer.style(
-                    ("No se pudo conectar con el servidor"), fg="red", bold=True
-                )
+            return NautaClientResponse(
+                error=True, message="No se pudo conectar con el servidor"
             )
 
-    def available_time(self) -> str:
+    def available_time(self, session: Session):
         """Función para obtener el tiempo disponible"""
 
         try:
 
-            session = get_session()
-
             if not session:
-                typer.echo(
-                    typer.style(
-                        'Primero inicie sesión con el comando: "nauta login"',
-                        fg="yellow",
-                        bold=True,
-                    )
+                return NautaClientResponse(
+                    error=True,
+                    message="Primero inicie sesión con el comando: 'nauta login'",
                 )
-                return
 
             resp = requests.post(
                 AVAILABLE_TIME_URL,
@@ -203,15 +133,15 @@ class NautaClient(object):
                     "username": session.username,
                 },
                 headers=self.headers,
-                timeout=60,
+                timeout=30,
             )
 
             if not resp.ok or "error" in resp.text:
                 raise ConnectionError
 
-            return resp.text
+            return NautaClientResponse(error=False, message=resp.text)
 
         except (ConnectionError, ReadTimeout):
-            typer.echo(
-                typer.style(("No se pudo obtener el tiempo"), fg="red", bold=True)
+            return NautaClientResponse(
+                error=True, message="No se pudo obtener el tiempo disponible"
             )

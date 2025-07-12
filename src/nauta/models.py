@@ -17,3 +17,9 @@ class Session:
     wlanuserip: str
     attribute_uuid: str
     created_at: int
+
+
+@dataclass
+class NautaClientResponse:
+    error: bool
+    message: str
