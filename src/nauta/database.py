@@ -23,6 +23,18 @@ def create_conn():
     return connection, connection.cursor()
 
 
+def clear_database():
+    """Función para limpiar la base de datos para fines de testing"""
+
+    connection, cursor = create_conn()
+    cursor.execute("DROP TABLE IF EXISTS accounts")
+    cursor.execute("DROP TABLE IF EXISTS session")
+    cursor.execute("DROP TABLE IF EXISTS secret")
+
+    connection.commit()
+    connection.close()
+
+
 def initialize_database():
     """Crear tabla si no existe"""
 
