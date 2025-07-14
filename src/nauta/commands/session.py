@@ -95,6 +95,11 @@ def logout(
 
     if response.error:
         typer.echo(typer.style(response.message, fg="red"))
+        typer.echo(
+            typer.style(
+                "Intente usar el comando 'nauta logout -f' si la sesión ya está cerrada."
+            )
+        )
     else:
         typer.echo(typer.style(response.message, fg="green"))
 
