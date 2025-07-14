@@ -4,6 +4,8 @@ Línea de comandos para el nauta hogar Cuba
 
 ## Instalación con pipx
 
+Para instalar `pipx` siga las [instrucciones](https://github.com/pypa/pipx#install-pipx) según su sistema operativo
+
 ```bash
 pipx install nauta --force
 ```
