@@ -27,7 +27,7 @@ class NautaClient:
 
         try:
 
-            resp = requests.get(HOST_URL, timeout=60)
+            resp = requests.get(HOST_URL, timeout=30)
 
             soup = BeautifulSoup(resp.text, "html.parser")
 
