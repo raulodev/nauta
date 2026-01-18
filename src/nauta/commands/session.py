@@ -89,8 +89,6 @@ def logout(
 
     nauta_client = NautaClient()
 
-    time_response = nauta_client.available_time(session)
-
     response = nauta_client.logout(session, force=force)
 
     if response.error:
@@ -102,6 +100,11 @@ def logout(
         )
     else:
         typer.echo(typer.style(response.message, fg="green"))
+
+        if force:
+            return
+
+        time_response = nauta_client.available_time(session)
 
         if not time_response.error:
             typer.echo(
