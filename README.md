@@ -18,12 +18,14 @@ pipx install nauta --force
 nauta add micorreo@nauta.com.cu contraseña
 ```
 
-2. Iniciar sesión
+1. Iniciar sesión
+
 ```console
 nauta login
 ```
 
-3. Cerrar sesión
+1. Cerrar sesión
+
 ```console
 nauta logout
 ```
@@ -32,4 +34,16 @@ nauta logout
 
 ```bash
 nauta --help
+```
+
+## Desinstalación
+
+```bash
+pipx uninstall nauta
+```
+
+## Actualización
+
+```bash
+pipx upgrade nauta
 ```
