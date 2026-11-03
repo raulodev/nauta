@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 nauta = "nauta.cli:app"
 
 [project]
-name = "nauta-cli"
+name = "nauta-hogar"
 version = "0.1.5"
 authors = [{ name = "Raúl Cobiellas", email = "raulodev@gmail.com" }]
 description = "Línea de comandos para el nauta hogar Cuba"
