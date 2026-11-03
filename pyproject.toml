@@ -22,7 +22,7 @@ dependencies = [
   "appdirs==1.4.4",
   "requests==2.32.4",
   "beautifulsoup4==4.12.3",
-  "urllib3==1.26.18",
+  "urllib3==2.8.0",
 ]
 
 [tool.hatch.build.targets.wheel]
