@@ -25,6 +25,9 @@ dependencies = [
   "urllib3==1.26.18",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/nauta"]
+
 [project.urls]
 Homepage = "https://github.com/raulodev/nauta"
 Issues = "https://github.com/raulodev/nauta/issues"
