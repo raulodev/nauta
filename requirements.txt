@@ -4,7 +4,7 @@ twine==5.1.1
 pipx==1.7.1
 
 # testing dependencies
-pytest==8.4.1
+pytest==9.0.3
 
 # dependencies 
 typer==0.16.0
