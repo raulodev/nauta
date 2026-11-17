@@ -20,7 +20,7 @@ classifiers = [
 dependencies = [
   "typer==0.16.0",
   "appdirs==1.4.4",
-  "requests==2.32.4",
+  "requests==2.33.0",
   "beautifulsoup4==4.12.3",
   "urllib3==2.8.0",
 ]
